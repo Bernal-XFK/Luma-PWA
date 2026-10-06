@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Luma: tus tareas, fechas especiales y recordatorios en un solo lugar.">
+  <title>Luma — un paso a la vez</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="m12 2 1.72 6.28L20 10l-6.28 1.72L12 18l-1.72-6.28L4 10l6.28-1.72L12 2Z"/><path d="m19 15 .86 3.14L23 19l-3.14.86L19 23l-.86-3.14L15 19l3.14-.86L19 15Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M16 3v4M8 3v4M3 10h18"/></symbol>
+    <symbol id="i-cake" viewBox="0 0 24 24"><path d="M4 12h16v8H4zM3 20h18M7 12V9.5A2.5 2.5 0 0 1 9.5 7h5A2.5 2.5 0 0 1 17 9.5V12M8 4v2m4-3v2m4-1v2"/><path d="M4 16c1.4 0 1.4-1.3 2.7-1.3S8.1 16 9.4 16s1.4-1.3 2.7-1.3 1.4 1.3 2.7 1.3 1.4-1.3 2.7-1.3S18.9 16 20 16"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4 4h16l2 11v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-4L4 4Z"/><path d="M2 15h5l2 3h6l2-3h5"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9m-8 12a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2a2 2 0 0 1 0-2.8l7.2-7.2A2 2 0 0 1 12 2.8H20a1.2 1.2 0 0 1 1.2 1.2v8a2 2 0 0 1-.6 1.4Z"/><circle cx="16.5" cy="7.5" r="1"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18m-2 0-.9 14H5.9L5 6m4 0V4h6v2m-5 4v6m4-6v6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-wand" viewBox="0 0 24 24"><path d="m15 4 5 5M3 21l12-12m-8 1-1-3m8 8 3 1m-9-9 3-1m5 8 1 3M19 3v3m-1.5-1.5h3"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a5 5 0 1 1 .6-10A6.5 6.5 0 0 1 20 10a4 4 0 0 1-1 8Z"/><path d="m9 14 2 2 4-4"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5M12 3v12"/></symbol>
+    <symbol id="i-install" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M10 18h4m-2-12v7m-3-3 3 3 3-3"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8m-8 4h6"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M20 4c-8 0-14 3-14 10a6 6 0 0 0 6 6c7 0 10-6 8-16Z"/><path d="M4 21c2-5 6-8 11-11"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="Luma, inicio" data-view-link="today">
+        <span class="brand-mark"><svg><use href="#i-sparkle"/></svg></span>
+        <span class="brand-name">luma</span><span class="brand-dot">.</span>
+      </a>
+      <p class="side-label">TU ESPACIO</p>
+      <nav class="side-nav" aria-label="Vistas de tareas">
+        <button class="nav-item active" data-view="today">
+          <svg><use href="#i-sun"/></svg><span>Mi día</span><span class="nav-count" id="countToday">0</span>
+        </button>
+        <button class="nav-item" data-view="upcoming">
+          <svg><use href="#i-calendar"/></svg><span>Próximas</span><span class="nav-count" id="countUpcoming">0</span>
+        </button>
+        <button class="nav-item" data-view="birthdays">
+          <svg><use href="#i-cake"/></svg><span>Cumpleaños</span><span class="nav-count" id="countBirthdays">0</span>
+        </button>
+        <button class="nav-item" data-view="all">
+          <svg><use href="#i-inbox"/></svg><span>Todas</span>
+        </button>
+        <button class="nav-item" data-view="completed">
+          <svg><use href="#i-check"/></svg><span>Completadas</span>
+        </button>
+        <button class="nav-item" data-view="notes">
+          <svg><use href="#i-note"/></svg><span>Notas</span><span class="nav-count" id="countNotes">0</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-divider"></div>
+      <div class="week-card">
+        <div class="week-card-top"><span class="week-icon"><svg><use href="#i-sparkle"/></svg></span><span>Tu semana</span><span class="week-kicker">POCO A POCO</span></div>
+        <p><strong id="weekDone">0</strong> tareas listas</p>
+        <div class="week-track"><span id="weekBar"></span></div>
+        <span class="week-note" id="weekNote">Cada pequeño paso cuenta ✨</span>
+      </div>
+      <div class="sidebar-spacer"></div>
+      <button class="side-help" id="helpButton"><span class="help-mark">?</span><span>Instala o aprende más</span><svg><use href="#i-chevron"/></svg></button>
+      <div class="side-footer"><span class="offline-dot"></span> Tus datos viven en este dispositivo</div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark"><svg><use href="#i-sparkle"/></svg></span><span class="brand-name">luma<span class="brand-dot">.</span></span></div>
+        <div class="topbar-date"><span class="date-orbit"><svg><use href="#i-sparkle"/></svg></span><span id="topDate">Un buen día para empezar</span></div>
+        <div class="topbar-actions">
+          <label class="search-box" aria-label="Buscar actividades o notas">
+            <svg><use href="#i-search"/></svg><input id="searchInput" type="search" placeholder="Buscar actividad..." autocomplete="off"><kbd>⌘ K</kbd>
+          </label>
+          <button class="icon-button notification-button" id="notificationButton" aria-label="Activar notificaciones" title="Activar notificaciones"><svg><use href="#i-bell"/></svg><span class="notification-dot" id="notificationDot"></span></button>
+          <button class="icon-button backup-quick-button" id="backupQuickButton" aria-label="Copias de seguridad" title="Exportar o importar respaldo"><svg><use href="#i-cloud"/></svg></button>
+          <button class="install-app-button" id="installAppButton" aria-label="Instalar Luma en este dispositivo" title="Instalar Luma"><svg><use href="#i-install"/></svg><span>Instalar app</span></button>
+          <button class="top-add-button" id="topAddButton"><svg><use href="#i-plus"/></svg><span>Nuevo</span></button>
+        </div>
+      </header>
+
+      <div class="page-wrap">
+        <section class="hero-card" aria-label="Resumen de tu día">
+          <div class="hero-copy">
+            <div class="hero-kicker"><span class="hero-kicker-dot"></span> <span id="heroDate">HOY, UN DÍA A LA VEZ</span></div>
+            <h1>Un paso a la vez<span class="hero-period">.</span></h1>
+            <p>Organiza lo que importa. Deja espacio para lo que te hace bien.</p>
+            <div class="hero-progress">
+              <div class="progress-meta"><span id="progressLabel">Tu progreso de hoy</span><strong id="progressCount">0 de 0</strong></div>
+              <div class="progress-track"><span id="progressBar"></span></div>
+            </div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="art-halo halo-one"></div><div class="art-halo halo-two"></div>
+            <div class="art-sun"><svg viewBox="0 0 160 160"><path class="sun-rays" d="M80 13v17m0 100v17M13 80h17m100 0h17M32.6 32.6l12 12m70.8 70.8 12 12m0-94.8-12 12m-70.8 70.8-12 12"/><circle cx="80" cy="80" r="32"/><path class="sun-smile" d="M68 83c3 4 7 6 12 6s9-2 12-6M70 72h.1m20 0h.1"/></svg></div>
+            <span class="art-spark spark-a">✦</span><span class="art-spark spark-b">✧</span><span class="art-orbit-dot"></span>
+            <div class="art-note"><span class="note-check"><svg><use href="#i-check"/></svg></span><span>lo estás haciendo bien</span></div>
+          </div>
+        </section>
+
+        <div class="content-grid">
+          <section class="tasks-panel" aria-live="polite">
+            <div id="tasksContent">
+            <div class="section-heading">
+              <div>
+                <div class="section-eyebrow"><span class="eyebrow-line"></span><span id="viewEyebrow">TU RITMO</span></div>
+                <h2 id="viewTitle">Para hoy <span class="title-spark">✦</span></h2>
+                <p id="viewSubtitle">Lo importante, sin prisa.</p>
+              </div>
+              <button class="add-task-button" id="addTaskButton"><span class="add-button-icon"><svg><use href="#i-plus"/></svg></span><span>Agregar actividad</span></button>
+            </div>
+            <div class="list-toolbar">
+              <div class="list-status"><span class="status-dot"></span><span id="listSummary">0 actividades</span></div>
+              <div class="view-toggle" role="group" aria-label="Filtrar actividades">
+                <button class="toggle-option selected" data-status="pending">Por hacer <span id="pendingCount">0</span></button>
+                <button class="toggle-option" data-status="done">Listas <span id="doneCount">0</span></button>
+              </div>
+            </div>
+            <div id="taskList" class="task-list"></div>
+            <div id="emptyState" class="empty-state" hidden>
+              <div class="empty-illustration"><span class="empty-orbit"></span><span class="empty-spark">✦</span><svg><use href="#i-leaf"/></svg></div>
+              <h3 id="emptyTitle">Un espacio para empezar</h3>
+              <p id="emptyCopy">No hay actividades aquí todavía. Agrega una y haz que el día cuente.</p>
+              <button id="emptyAddButton" class="empty-add">Crear mi primera actividad <svg><use href="#i-arrow"/></svg></button>
+            </div>
+            <div class="list-bottom-note"><svg><use href="#i-cloud"/></svg><span>Se guarda automáticamente en este dispositivo</span><span class="note-divider"></span><span>hecho con calma <b>♡</b></span></div>
+            </div>
+            <div id="notesContent" class="notes-content" hidden>
+              <div class="section-heading">
+                <div><div class="section-eyebrow"><span class="eyebrow-line"></span><span>IDEAS Y RECUERDOS</span></div><h2>Mis notas <span class="title-spark">✦</span></h2><p>Guarda pensamientos, listas e imágenes en un solo lugar.</p></div>
+                <button class="add-task-button" id="addNoteButton"><span class="add-button-icon"><svg><use href="#i-plus"/></svg></span><span>Nueva nota</span></button>
+              </div>
+              <div class="list-toolbar"><div class="list-status"><span class="status-dot"></span><span id="notesSummary">0 notas</span></div><span class="notes-local-label"><svg><use href="#i-cloud"/></svg> Solo en este dispositivo</span></div>
+              <div id="notesGrid" class="notes-grid"></div>
+              <div id="notesEmpty" class="empty-state" hidden><div class="empty-illustration notes-empty-illustration"><span class="empty-orbit"></span><span class="empty-spark">✦</span><svg><use href="#i-note"/></svg></div><h3 id="notesEmptyTitle">Un rincón para tus ideas</h3><p id="notesEmptyCopy">Escribe una nota, guarda una lista o añade imágenes para recordar lo importante.</p><button id="addFirstNoteButton" class="empty-add">Crear mi primera nota <svg><use href="#i-arrow"/></svg></button></div>
+              <div class="list-bottom-note"><svg><use href="#i-cloud"/></svg><span>Notas e imágenes guardadas localmente</span><span class="note-divider"></span><span>hecho con calma <b>♡</b></span></div>
+            </div>
+          </section>
+
+          <aside class="right-rail" aria-label="Agenda y recordatorios">
+            <section class="rail-card agenda-card">
+              <div class="rail-heading"><div><span class="rail-eyebrow">MÁS ADELANTE</span><h3>Siguiente en agenda</h3></div><span class="rail-icon agenda-icon"><svg><use href="#i-calendar"/></svg></span></div>
+              <div id="agendaList" class="agenda-list"></div>
+              <button class="rail-link" data-view-link="upcoming">Ver próximas actividades <svg><use href="#i-arrow"/></svg></button>
+            </section>
+            <section class="rail-card birthday-card">
+              <div class="birthday-orb orb-a"></div><div class="birthday-orb orb-b"></div>
+              <div class="rail-heading birthday-heading"><div><span class="rail-eyebrow">MOMENTOS BONITOS</span><h3>Fechas que alegran</h3></div><span class="rail-icon cake-icon"><svg><use href="#i-cake"/></svg></span></div>
+              <div id="birthdayList" class="birthday-list"></div>
+              <button class="rail-link birthday-link" data-view-link="birthdays">Ver cumpleaños <svg><use href="#i-arrow"/></svg></button>
+            </section>
+            <section class="reminder-card">
+              <div class="reminder-icon"><svg><use href="#i-bell"/></svg><span></span></div>
+              <div class="reminder-copy"><strong>Un recordatorio suave</strong><p>Activa las notificaciones para no dejar pasar tus fechas importantes.</p></div>
+              <button id="railNotificationButton" class="reminder-action" aria-label="Activar recordatorios"><svg><use href="#i-arrow"/></svg></button>
+            </section>
+            <div class="privacy-note"><svg><use href="#i-heart"/></svg><span>Privado por diseño. Tus actividades no salen de tu dispositivo.</span></div>
+          </aside>
+        </div>
+        <footer class="page-footer"><span>Hecho para acompañarte, no para apurarte.</span><span class="footer-flower">✿</span></footer>
+      </div>
+    </main>
+  </div>
+
+  <dialog class="task-dialog" id="taskDialog" aria-labelledby="dialogTitle">
+    <form id="taskForm" class="dialog-form">
+      <div class="dialog-head">
+        <div><span class="dialog-eyebrow" id="dialogEyebrow">UN NUEVO PASITO</span><h2 id="dialogTitle">¿Qué tienes en mente?</h2></div>
+        <button class="dialog-close" type="button" id="closeDialog" aria-label="Cerrar"><svg><use href="#i-close"/></svg></button>
+      </div>
+      <label class="field-label" for="taskTitle">Nombre de la actividad <span>*</span></label>
+      <input class="text-input title-input" id="taskTitle" name="title" placeholder="Ej. Llamar a la abuela" maxlength="90" required>
+      <div class="smart-date-field">
+        <label class="field-label" for="taskSmartDate">Fecha rápida <span class="optional-label">sin abrir calendario</span></label>
+        <div class="smart-date-control"><svg><use href="#i-sparkle"/></svg><input class="text-input" id="taskSmartDate" type="text" autocomplete="off" placeholder="lunes, mañana o en 3 días"><span class="smart-date-badge">rápido</span></div>
+        <p class="smart-date-feedback" id="smartDateFeedback">Escribe «lunes» aquí o en el nombre de la actividad y Luma pondrá la fecha automáticamente.</p>
+      </div>
+      <label class="field-label" for="taskNotes">Un detalle (opcional)</label>
+      <textarea class="text-input notes-input" id="taskNotes" name="notes" rows="2" maxlength="220" placeholder="Agrega una nota para tu yo del futuro..."></textarea>
+      <div class="form-row type-date-row">
+        <div class="field-block">
+          <label class="field-label" for="taskType">Tipo</label>
+          <select class="text-input" id="taskType" name="type"><option value="task">Actividad</option><option value="birthday">Cumpleaños</option></select>
+        </div>
+        <div class="field-block date-field">
+          <label class="field-label" for="taskDate">Fecha <span class="optional-label">(opcional)</span></label>
+          <input class="text-input" id="taskDate" name="date" type="date">
+        </div>
+      </div>
+      <div class="birthday-options" id="birthdayOptions" hidden>
+        <label class="check-label"><input type="checkbox" id="repeatYearly" checked><span class="custom-check"><svg><use href="#i-check"/></svg></span><span>Recordar cada año</span><span class="repeat-note">ideal para cumpleaños</span></label>
+        <div class="birthday-photo-row">
+          <div class="birthday-photo-preview" id="birthdayPhotoPreview"><svg><use href="#i-image"/></svg></div>
+          <div class="birthday-photo-controls"><strong>Foto del cumpleañero/a <span class="optional-label">(opcional)</span></strong><p>Se guarda solo en este dispositivo.</p><div class="birthday-photo-buttons"><label class="photo-pick-button" for="birthdayPhotoInput"><svg><use href="#i-image"/></svg><span id="birthdayPhotoButtonLabel">Añadir foto</span></label><input class="visually-hidden" id="birthdayPhotoInput" type="file" accept="image/*"><button class="photo-remove-button" id="removeBirthdayPhoto" type="button" hidden>Quitar</button></div></div>
+        </div>
+      </div>
+      <div class="form-row detail-row">
+        <div class="field-block">
+          <label class="field-label" for="taskTime">Hora <span class="optional-label">(opcional)</span></label>
+          <div class="input-with-icon"><svg><use href="#i-clock"/></svg><input class="text-input" id="taskTime" name="time" type="time"></div>
+        </div>
+        <div class="field-block">
+          <label class="field-label" for="taskCategory">Categoría</label>
+          <select class="text-input" id="taskCategory" name="category"><option value="personal">Personal</option><option value="trabajo">Trabajo</option><option value="hogar">Hogar</option><option value="bienestar">Bienestar</option><option value="otros">Otros</option></select>
+        </div>
+      </div>
+      <div class="form-row priority-row">
+        <div class="field-block">
+          <label class="field-label" for="taskPriority">Prioridad</label>
+          <select class="text-input" id="taskPriority" name="priority"><option value="normal">Tranquila</option><option value="important">Importante</option><option value="urgent">Prioritaria</option></select>
+        </div>
+        <div class="field-block">
+          <label class="field-label" for="taskReminder">Aviso</label>
+          <select class="text-input" id="taskReminder" name="reminder"><option value="">Sin aviso</option><option value="0">A la hora</option><option value="10" selected>10 min antes</option><option value="30">30 min antes</option><option value="60">1 hora antes</option><option value="1440">1 día antes</option></select>
+        </div>
+      </div>
+      <p class="form-hint"><svg><use href="#i-sparkle"/></svg> Si no eliges una hora, el aviso llegará a las 9:00 a. m.</p>
+      <div class="dialog-actions"><button class="cancel-button" type="button" id="cancelDialog">Cancelar</button><button class="save-button" type="submit"><span id="saveButtonLabel">Guardar actividad</span><svg><use href="#i-arrow"/></svg></button></div>
+    </form>
+  </dialog>
+
+  <dialog class="note-dialog" id="noteDialog" aria-labelledby="noteDialogTitle">
+    <form id="noteForm" class="dialog-form note-form">
+      <div class="dialog-head"><div><span class="dialog-eyebrow" id="noteDialogEyebrow">UNA IDEA PARA GUARDAR</span><h2 id="noteDialogTitle">Escribe tu nota</h2></div><button class="dialog-close" type="button" id="closeNoteDialog" aria-label="Cerrar"><svg><use href="#i-close"/></svg></button></div>
+      <label class="field-label" for="noteTitle">Título <span class="optional-label">(opcional)</span></label>
+      <input class="text-input title-input" id="noteTitle" maxlength="90" placeholder="Ej. Ideas para el viaje">
+      <label class="field-label note-body-label" for="noteBody">Tu nota</label>
+      <textarea class="text-input note-body-input" id="noteBody" rows="7" maxlength="4000" placeholder="Escribe libremente: listas, ideas, recuerdos..."></textarea>
+      <div class="note-attachments-head"><div><strong>Imágenes <span class="optional-label">(opcional)</span></strong><p>Hasta 3 por nota. Se comprimen para ocupar menos espacio.</p></div><button class="photo-pick-button" type="button" id="addNoteImageButton"><svg><use href="#i-image"/></svg>Añadir imagen</button><input class="visually-hidden" id="noteImagesInput" type="file" accept="image/*" multiple></div>
+      <div id="noteImagePreviews" class="note-image-previews"></div>
+      <p class="form-hint"><svg><use href="#i-cloud"/></svg> Esta nota y sus imágenes permanecen en tu dispositivo.</p>
+      <div class="dialog-actions"><button class="cancel-button" type="button" id="cancelNoteDialog">Cancelar</button><button class="save-button" type="submit"><span id="saveNoteLabel">Guardar nota</span><svg><use href="#i-arrow"/></svg></button></div>
+    </form>
+  </dialog>
+
+  <dialog class="help-dialog" id="helpDialog" aria-labelledby="helpTitle">
+    <div class="help-dialog-inner">
+      <button class="dialog-close help-close" id="closeHelp" aria-label="Cerrar"><svg><use href="#i-close"/></svg></button>
+      <div class="help-hero-icon"><svg><use href="#i-sparkle"/></svg></div>
+      <span class="dialog-eyebrow">LUMA, CONTIGO</span><h2 id="helpTitle">Tu espacio, también en tu pantalla de inicio.</h2>
+      <p class="help-intro">Luma funciona como una pequeña app: se instala, abre a pantalla completa y puede trabajar sin conexión.</p>
+      <div class="help-feature"><span><svg><use href="#i-cloud"/></svg></span><div><strong>Guardado local</strong><p>Tus actividades y notas con imágenes viven en este navegador, no en una cuenta ni en un servidor.</p></div></div>
+      <div class="help-feature"><span><svg><use href="#i-bell"/></svg></span><div><strong>Recordatorios</strong><p>Permite las notificaciones y elige un aviso en cada actividad. Para recibir avisos cuando Luma esté cerrada se necesita un servicio de notificaciones en segundo plano; esta versión avisa mientras la app está abierta.</p></div></div>
+      <div class="install-instructions" id="installInstructions"><strong>Cómo instalar</strong><p id="installCopy">En Chrome o Edge, usa el botón «Instalar» o el icono de instalación de la barra de direcciones. En iPhone/iPad: Compartir → Añadir a pantalla de inicio.</p></div>
+      <div class="help-actions"><button class="cancel-button" id="closeHelpSecondary">Ahora no</button><button class="save-button" id="installButton"><span>Instalar Luma</span><svg><use href="#i-arrow"/></svg></button></div>
+      <section class="backup-panel" id="backupPanel" aria-labelledby="backupTitle">
+        <div class="backup-panel-head"><span class="backup-panel-icon"><svg><use href="#i-cloud"/></svg></span><div><strong id="backupTitle">Una copia para estar tranquilo</strong><p>Descarga tus actividades, cumpleaños, notas e imágenes en un archivo JSON para guardarlo o moverlo a otro dispositivo.</p></div></div>
+        <div class="backup-actions"><button class="cancel-button" id="exportButton" type="button"><svg><use href="#i-download"/></svg>Exportar datos</button><button class="save-button" id="importButton" type="button"><svg><use href="#i-upload"/></svg>Importar respaldo</button><input id="importInput" class="visually-hidden" type="file" accept=".json,application/json" aria-label="Seleccionar archivo de respaldo JSON"></div>
+        <p class="backup-note">Al importar, se agregan las actividades nuevas y se actualizan las que coincidan. El resto de tu lista se conserva.</p>
+      </section>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"><span class="toast-icon"><svg><use href="#i-check"/></svg></span><span id="toastMessage"></span></div>
+</body>
+</html>

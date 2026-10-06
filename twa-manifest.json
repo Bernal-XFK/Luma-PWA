@@ -1,0 +1,30 @@
+{
+  "packageId": "com.luma.app",
+  "host": "bernal-xfk.github.io",
+  "name": "Luma — un paso a la vez",
+  "launcherName": "Luma",
+  "displayMode": "standalone",
+  "themeColor": "#f7f7f4",
+  "navigationColor": "#f7f7f4",
+  "backgroundColor": "#f7f7f4",
+  "enableNotifications": true,
+  "startUrl": "/Luma-PWA/",
+  "iconUrl": "https://bernal-xfk.github.io/Luma-PWA/icon-512.png",
+  "maskableIconUrl": "https://bernal-xfk.github.io/Luma-PWA/icon-512.png",
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://bernal-xfk.github.io/Luma-PWA/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": { "enabled": false },
+    "playBilling": { "enabled": false }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isRequestInterceptionEnabled": false
+}

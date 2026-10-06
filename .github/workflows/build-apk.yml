@@ -1,0 +1,49 @@
+name: Compilar APK Android (TWA)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Compilar APK con Bubblewrap
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar Bubblewrap CLI
+        run: npm install -g @bubblewrap/cli
+
+      - name: Generar proyecto Android TWA
+        run: |
+          npx @bubblewrap/cli init --manifest twa-manifest.json
+
+      - name: Compilar APK
+        run: |
+          npx @bubblewrap/cli build --skipSigning || (cd luma-app && ./gradlew assembleDebug)
+
+      - name: Subir APK como artefacto descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: Luma-APK-Android
+          path: |
+            *.apk
+            **/*.apk
+          retention-days: 30
