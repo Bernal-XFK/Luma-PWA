@@ -36,6 +36,8 @@
   let dateSource = 'default';
   let toastTimer;
   let deferredInstallPrompt = null;
+  let calendarYear = new Date().getFullYear();
+  let selectedBdayDayKey = null;
   const DB_NAME = 'luma_db';
   const DB_VERSION = 1;
 
@@ -408,11 +410,23 @@
     $('#viewSubtitle').textContent = subtitle;
     $$('.nav-item').forEach(button => button.classList.toggle('active', button.dataset.view === currentView));
     const notesMode = currentView === 'notes';
-    $('#tasksContent').hidden = notesMode;
+    const birthdaysMode = currentView === 'birthdays';
+    $('#tasksContent').hidden = notesMode || birthdaysMode;
     $('#notesContent').hidden = !notesMode;
-    $('#searchInput').placeholder = notesMode ? 'Buscar en mis notas...' : 'Buscar actividad...';
+    const bdayContainer = $('#birthdaysContent');
+    if (bdayContainer) bdayContainer.hidden = !birthdaysMode;
+
+    $('#searchInput').placeholder = notesMode ? 'Buscar en mis notas...' : birthdaysMode ? 'Buscar cumpleaños...' : 'Buscar actividad...';
     if (notesMode) {
       renderNotes();
+      renderIndicators();
+      renderAgenda();
+      renderBirthdays();
+      updateNotificationUI();
+      return;
+    }
+    if (birthdaysMode) {
+      renderBirthdaysCalendar();
       renderIndicators();
       renderAgenda();
       renderBirthdays();
@@ -566,6 +580,304 @@
         <div class="birthday-details"><strong>${escapeHTML(task.title)}</strong><span>${escapeHTML(dateText)}${task.time ? ` · ${escapeHTML(task.time)}` : ''}</span></div>
         <span class="birthday-when">${escapeHTML(when)}</span>
       </div>`;
+    }).join('');
+  }
+
+  const BALLOON_PALETTES = [
+    { bg: '#e05a47', text: '#fff' },
+    { bg: '#339c73', text: '#fff' },
+    { bg: '#8359b3', text: '#fff' },
+    { bg: '#259bb8', text: '#fff' },
+    { bg: '#df8926', text: '#fff' },
+    { bg: '#cf4578', text: '#fff' },
+    { bg: '#2b75bd', text: '#fff' },
+    { bg: '#6b9231', text: '#fff' },
+    { bg: '#bf4538', text: '#fff' },
+    { bg: '#8d4f9e', text: '#fff' },
+    { bg: '#209e90', text: '#fff' },
+    { bg: '#cf5d46', text: '#fff' }
+  ];
+
+  function getBirthdayBalloonStyle(task) {
+    let hash = 0;
+    const str = (task.id || '') + (task.title || '');
+    for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    const index = Math.abs(hash) % BALLOON_PALETTES.length;
+    return BALLOON_PALETTES[index];
+  }
+
+  function getBirthdayInitial(task) {
+    const clean = (task.title || '')
+      .replace(/^cumpleaños\s+de\s+/i, '')
+      .replace(/^cumple\s+de\s+/i, '')
+      .trim();
+    return clean.charAt(0).toUpperCase() || '🎂';
+  }
+
+  function getBirthdayDisplayName(task) {
+    return (task.title || '')
+      .replace(/^cumpleaños\s+de\s+/i, '')
+      .replace(/^cumple\s+de\s+/i, '')
+      .trim() || task.title;
+  }
+
+  const MONTH_NAMES = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+  const WEEKDAY_NAMES_SHORT = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'];
+  const WEEKDAY_NAMES_FULL = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+  function isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+  }
+
+  function daysInMonth(year, monthIndex) {
+    return new Date(year, monthIndex + 1, 0).getDate();
+  }
+
+  function startDayOfWeek(year, monthIndex) {
+    const jsDay = new Date(year, monthIndex, 1).getDay();
+    return (jsDay + 6) % 7;
+  }
+
+  function getDayOfWeekName(year, monthIndex, day) {
+    const jsDay = new Date(year, monthIndex, day).getDay();
+    const col = (jsDay + 6) % 7;
+    return WEEKDAY_NAMES_FULL[col];
+  }
+
+  function getBirthdaysMap() {
+    const map = new Map();
+    const term = searchTerm.toLocaleLowerCase('es-CO');
+    tasks.filter(t => t.type === 'birthday' && t.date).forEach(task => {
+      if (term && !task.title.toLocaleLowerCase('es-CO').includes(term)) return;
+      const parts = task.date.split('-').map(Number);
+      if (parts.length >= 3) {
+        let m = parts[1];
+        let d = parts[2];
+        if (m === 2 && d === 29 && !isLeapYear(calendarYear)) d = 28;
+        const key = `${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(task);
+      }
+    });
+    return map;
+  }
+
+  function calculateTurningAge(task, targetYear) {
+    if (!task.date) return null;
+    const [birthYear] = task.date.split('-').map(Number);
+    if (birthYear && birthYear > 1900 && birthYear < targetYear) {
+      return targetYear - birthYear;
+    }
+    return null;
+  }
+
+  function renderBirthdaysCalendar() {
+    const grid = $('#birthdaysCalendarGrid');
+    if (!grid) return;
+
+    const bdayTasks = tasks.filter(t => t.type === 'birthday' && t.date);
+    const bdaysMap = getBirthdaysMap();
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const todayMonth = today.getMonth();
+    const todayDate = today.getDate();
+
+    const yearNumEl = $('#calendarYearNumber');
+    if (yearNumEl) yearNumEl.textContent = calendarYear;
+    const sumYearEl = $('#summaryYearLabel');
+    if (sumYearEl) sumYearEl.textContent = calendarYear;
+
+    const diffYears = calendarYear - currentYear;
+    const yearBadgeEl = $('#calendarYearBadge');
+    if (yearBadgeEl) {
+      yearBadgeEl.textContent = diffYears === 0 ? 'Año actual' : (diffYears > 0 ? `+${diffYears} ${diffYears === 1 ? 'año' : 'años'}` : `${diffYears} ${diffYears === -1 ? 'año' : 'años'}`);
+    }
+    const totalCountEl = $('#bdayTotalCount');
+    if (totalCountEl) totalCountEl.textContent = bdayTasks.length;
+
+    let gridHTML = '';
+    for (let m = 0; m < 12; m++) {
+      const monthName = MONTH_NAMES[m];
+      const daysCount = daysInMonth(calendarYear, m);
+      const startOffset = startDayOfWeek(calendarYear, m);
+
+      let monthBdayCount = 0;
+      for (let d = 1; d <= daysCount; d++) {
+        const key = `${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        if (bdaysMap.has(key)) monthBdayCount += bdaysMap.get(key).length;
+      }
+
+      let daysHTML = '';
+      for (let s = 0; s < startOffset; s++) {
+        daysHTML += '<span class="bday-day-cell is-empty"></span>';
+      }
+
+      for (let d = 1; d <= daysCount; d++) {
+        const key = `${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const hasBirthdays = bdaysMap.has(key);
+        const isToday = calendarYear === currentYear && m === todayMonth && d === todayDate;
+        const isSelected = selectedBdayDayKey === key;
+
+        if (hasBirthdays) {
+          const list = bdaysMap.get(key);
+          const first = list[0];
+          const color = getBirthdayBalloonStyle(first);
+          const initial = getBirthdayInitial(first);
+          const photo = first.photoDataUrl;
+          const multipleBadge = list.length > 1 ? `<span class="bday-balloon-cluster-badge">+${list.length}</span>` : '';
+          const tooltip = `${d} de ${monthName}: ${list.map(t => getBirthdayDisplayName(t)).join(', ')}`;
+          const content = photo ? `<img src="${escapeHTML(photo)}" alt="">` : escapeHTML(initial);
+
+          daysHTML += `
+            <div class="bday-day-cell has-birthday ${isToday ? 'is-today-circle' : ''}" data-bday-key="${key}" title="${escapeHTML(tooltip)}">
+              <span class="bday-balloon-wrap ${isSelected ? 'is-active-day' : ''} ${list.length > 1 ? 'is-cluster' : ''}" style="--balloon-bg: ${color.bg}; --balloon-color: ${color.text}">
+                <span class="bday-balloon-bubble">${content}</span>
+                <span class="bday-balloon-tail"></span>
+                ${multipleBadge}
+              </span>
+            </div>`;
+        } else {
+          daysHTML += `<span class="bday-day-cell ${isToday ? 'is-today-circle' : ''}" title="${d} de ${monthName} (${getDayOfWeekName(calendarYear, m, d)})">${d}</span>`;
+        }
+      }
+
+      gridHTML += `
+        <article class="bday-month-card">
+          <div class="bday-month-header">
+            <h3 class="bday-month-title">${monthName}</h3>
+            ${monthBdayCount > 0 ? `<span class="bday-month-badge">${monthBdayCount} ${monthBdayCount === 1 ? 'fecha' : 'fechas'}</span>` : ''}
+          </div>
+          <div class="bday-weekdays-row">
+            ${WEEKDAY_NAMES_SHORT.map(w => `<span>${w}</span>`).join('')}
+          </div>
+          <div class="bday-days-grid">
+            ${daysHTML}
+          </div>
+        </article>`;
+    }
+
+    grid.innerHTML = gridHTML;
+    renderBirthdayDetailPanel(bdaysMap);
+    renderBirthdaySummaryList(bdayTasks);
+  }
+
+  function renderBirthdayDetailPanel(bdaysMap) {
+    const panel = $('#bdayDetailPanel');
+    const card = $('#bdayDetailCard');
+    if (!panel || !card) return;
+
+    if (!selectedBdayDayKey || !bdaysMap.has(selectedBdayDayKey)) {
+      panel.hidden = true;
+      return;
+    }
+
+    const [mStr, dStr] = selectedBdayDayKey.split('-');
+    const m = Number(mStr) - 1;
+    const d = Number(dStr);
+    const monthName = MONTH_NAMES[m];
+    const weekdayName = getDayOfWeekName(calendarYear, m, d);
+    const list = bdaysMap.get(selectedBdayDayKey);
+
+    card.innerHTML = `
+      <div class="bday-detail-header">
+        <div class="bday-detail-date-title">
+          <svg><use href="#i-cake"/></svg>
+          <span>${weekdayName}, ${d} de ${monthName} de ${calendarYear}</span>
+        </div>
+        <button class="bday-detail-close-btn" id="closeBdayDetailBtn" aria-label="Cerrar detalle"><svg><use href="#i-close"/></svg></button>
+      </div>
+      <div class="bday-detail-items">
+        ${list.map(task => {
+          const color = getBirthdayBalloonStyle(task);
+          const initial = getBirthdayInitial(task);
+          const name = getBirthdayDisplayName(task);
+          const age = calculateTurningAge(task, calendarYear);
+          const ageText = age !== null ? `<span class="bday-detail-age-tag">🎂 Cumple ${age} años en ${calendarYear}</span>` : '';
+          const avatar = task.photoDataUrl
+            ? `<span class="bday-detail-avatar" style="--item-bg:${color.bg}"><img src="${escapeHTML(task.photoDataUrl)}" alt=""></span>`
+            : `<span class="bday-detail-avatar" style="--item-bg:${color.bg}">${escapeHTML(initial)}</span>`;
+          return `
+            <div class="bday-detail-item" data-id="${escapeHTML(task.id)}">
+              ${avatar}
+              <div class="bday-detail-info">
+                <h4>${escapeHTML(name)}</h4>
+                <div class="bday-detail-meta">
+                  <span class="bday-detail-weekday-tag">Cae un ${weekdayName}</span>
+                  ${ageText}
+                  ${task.notes ? `<span>· ${escapeHTML(task.notes)}</span>` : ''}
+                </div>
+              </div>
+              <div class="bday-detail-actions">
+                <button class="task-action" data-bday-action="edit" data-id="${escapeHTML(task.id)}" title="Editar"><svg><use href="#i-edit"/></svg></button>
+                <button class="task-action delete" data-bday-action="delete" data-id="${escapeHTML(task.id)}" title="Eliminar"><svg><use href="#i-trash"/></svg></button>
+              </div>
+            </div>`;
+        }).join('')}
+      </div>`;
+
+    panel.hidden = false;
+  }
+
+  function renderBirthdaySummaryList(bdayTasks) {
+    const listEl = $('#bdaySummaryList');
+    const emptyEl = $('#bdayEmptyState');
+    if (!listEl) return;
+
+    const term = searchTerm.toLocaleLowerCase('es-CO');
+    const filtered = bdayTasks.filter(t => !term || t.title.toLocaleLowerCase('es-CO').includes(term));
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = '';
+      if (emptyEl) emptyEl.hidden = false;
+      const countEl = $('#summaryCountLabel');
+      if (countEl) countEl.textContent = '0 personas';
+      return;
+    }
+    if (emptyEl) emptyEl.hidden = true;
+
+    const sorted = filtered.slice().sort((a, b) => {
+      const partsA = a.date.split('-').map(Number);
+      const partsB = b.date.split('-').map(Number);
+      const keyA = (partsA[1] || 0) * 100 + (partsA[2] || 0);
+      const keyB = (partsB[1] || 0) * 100 + (partsB[2] || 0);
+      return keyA - keyB;
+    });
+
+    const countEl = $('#summaryCountLabel');
+    if (countEl) countEl.textContent = `${sorted.length} ${sorted.length === 1 ? 'persona' : 'personas'}`;
+
+    listEl.innerHTML = sorted.map(task => {
+      const parts = task.date.split('-').map(Number);
+      let m = (parts[1] || 1) - 1;
+      let d = parts[2] || 1;
+      if (m === 1 && d === 29 && !isLeapYear(calendarYear)) d = 28;
+      const monthName = MONTH_NAMES[m];
+      const weekdayName = getDayOfWeekName(calendarYear, m, d);
+      const color = getBirthdayBalloonStyle(task);
+      const initial = getBirthdayInitial(task);
+      const name = getBirthdayDisplayName(task);
+      const age = calculateTurningAge(task, calendarYear);
+      const ageText = age !== null ? ` · Cumple ${age} años` : '';
+      const avatar = task.photoDataUrl
+        ? `<span class="bday-summary-avatar" style="--summary-bg:${color.bg}"><img src="${escapeHTML(task.photoDataUrl)}" alt=""></span>`
+        : `<span class="bday-summary-avatar" style="--summary-bg:${color.bg}">${escapeHTML(initial)}</span>`;
+      const key = `${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+      return `
+        <div class="bday-summary-item" data-bday-key="${key}" data-id="${escapeHTML(task.id)}">
+          ${avatar}
+          <div class="bday-summary-text">
+            <strong>${escapeHTML(name)}</strong>
+            <span>${d} de ${monthName} · <b class="bday-summary-weekday">Cae ${weekdayName}</b>${escapeHTML(ageText)}</span>
+          </div>
+          <div class="task-actions" style="opacity: 0.9">
+            <button class="task-action" data-bday-action="edit" data-id="${escapeHTML(task.id)}" title="Editar"><svg><use href="#i-edit"/></svg></button>
+            <button class="task-action delete" data-bday-action="delete" data-id="${escapeHTML(task.id)}" title="Eliminar"><svg><use href="#i-trash"/></svg></button>
+          </div>
+        </div>`;
     }).join('');
   }
 
@@ -1316,7 +1628,7 @@
     if (searchTerm) { searchTerm = ''; $('#searchInput').value = ''; render(); }
     else openNoteDialog();
   });
-  $('#topAddButton').addEventListener('click', () => currentView === 'notes' ? openNoteDialog() : openTaskDialog());
+  $('#topAddButton').addEventListener('click', () => currentView === 'notes' ? openNoteDialog() : currentView === 'birthdays' ? openTaskDialog('birthday') : openTaskDialog());
   $('#emptyAddButton').addEventListener('click', () => {
     if (searchTerm) {
       searchTerm = '';
@@ -1328,6 +1640,90 @@
       render();
     } else {
       openTaskDialog(currentView === 'birthdays' ? 'birthday' : 'task');
+    }
+  });
+
+  // Controles del calendario anual de cumpleaños
+  $('#prevYearBtn')?.addEventListener('click', () => {
+    calendarYear--;
+    selectedBdayDayKey = null;
+    renderBirthdaysCalendar();
+  });
+  $('#nextYearBtn')?.addEventListener('click', () => {
+    calendarYear++;
+    selectedBdayDayKey = null;
+    renderBirthdaysCalendar();
+  });
+  $('#todayYearBtn')?.addEventListener('click', () => {
+    calendarYear = new Date().getFullYear();
+    selectedBdayDayKey = null;
+    renderBirthdaysCalendar();
+  });
+  $('#addBirthdayCalendarButton')?.addEventListener('click', () => openTaskDialog('birthday'));
+  $('#emptyAddBirthdayBtn')?.addEventListener('click', () => openTaskDialog('birthday'));
+
+  $('#birthdaysCalendarGrid')?.addEventListener('click', event => {
+    const cell = event.target.closest('[data-bday-key]');
+    if (!cell) return;
+    const key = cell.dataset.bdayKey;
+    selectedBdayDayKey = selectedBdayDayKey === key ? null : key;
+    renderBirthdaysCalendar();
+  });
+
+  $('#bdayDetailPanel')?.addEventListener('click', event => {
+    if (event.target.closest('#closeBdayDetailBtn')) {
+      selectedBdayDayKey = null;
+      renderBirthdaysCalendar();
+      return;
+    }
+    const editBtn = event.target.closest('[data-bday-action="edit"]');
+    if (editBtn) {
+      const task = tasks.find(t => t.id === editBtn.dataset.id);
+      if (task) openTaskDialog('birthday', task);
+      return;
+    }
+    const delBtn = event.target.closest('[data-bday-action="delete"]');
+    if (delBtn) {
+      const task = tasks.find(t => t.id === delBtn.dataset.id);
+      if (task) {
+        if (!window.confirm(`¿Eliminar el cumpleaños de “${getBirthdayDisplayName(task)}”?`)) return;
+        tasks = tasks.filter(t => t.id !== task.id);
+        persistTasks();
+        selectedBdayDayKey = null;
+        render();
+        showToast('Cumpleaños eliminado.');
+      }
+    }
+  });
+
+  $('#bdaySummaryList')?.addEventListener('click', event => {
+    const editBtn = event.target.closest('[data-bday-action="edit"]');
+    if (editBtn) {
+      event.stopPropagation();
+      const task = tasks.find(t => t.id === editBtn.dataset.id);
+      if (task) openTaskDialog('birthday', task);
+      return;
+    }
+    const delBtn = event.target.closest('[data-bday-action="delete"]');
+    if (delBtn) {
+      event.stopPropagation();
+      const task = tasks.find(t => t.id === delBtn.dataset.id);
+      if (task) {
+        if (!window.confirm(`¿Eliminar el cumpleaños de “${getBirthdayDisplayName(task)}”?`)) return;
+        tasks = tasks.filter(t => t.id !== task.id);
+        persistTasks();
+        selectedBdayDayKey = null;
+        render();
+        showToast('Cumpleaños eliminado.');
+      }
+      return;
+    }
+    const item = event.target.closest('.bday-summary-item');
+    if (item && item.dataset.bdayKey) {
+      selectedBdayDayKey = item.dataset.bdayKey;
+      renderBirthdaysCalendar();
+      const panel = $('#bdayDetailPanel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   });
   taskList.addEventListener('click', handleTaskAction);

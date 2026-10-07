@@ -157,6 +157,64 @@
               <div id="notesEmpty" class="empty-state" hidden><div class="empty-illustration notes-empty-illustration"><span class="empty-orbit"></span><span class="empty-spark">✦</span><svg><use href="#i-note"/></svg></div><h3 id="notesEmptyTitle">Un rincón para tus ideas</h3><p id="notesEmptyCopy">Escribe una nota, guarda una lista o añade imágenes para recordar lo importante.</p><button id="addFirstNoteButton" class="empty-add">Crear mi primera nota <svg><use href="#i-arrow"/></svg></button></div>
               <div class="list-bottom-note"><svg><use href="#i-cloud"/></svg><span>Notas e imágenes guardadas localmente</span><span class="note-divider"></span><span>hecho con calma <b>♡</b></span></div>
             </div>
+            <div id="birthdaysContent" class="birthdays-content" hidden>
+              <div class="section-heading">
+                <div>
+                  <div class="section-eyebrow"><span class="eyebrow-line"></span><span>MOMENTOS BONITOS</span></div>
+                  <h2>Calendario de Cumpleaños <span class="title-spark">✦</span></h2>
+                  <p>Descubre qué día caen las fechas de tu gente especial en cualquier año.</p>
+                </div>
+                <button class="add-task-button" id="addBirthdayCalendarButton"><span class="add-button-icon"><svg><use href="#i-plus"/></svg></span><span>Añadir cumpleaños</span></button>
+              </div>
+
+              <!-- Selector y Navegador del Año -->
+              <div class="calendar-year-bar">
+                <div class="year-control-group">
+                  <button class="year-nav-btn" id="prevYearBtn" aria-label="Año anterior" title="Año anterior">
+                    <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+                  </button>
+                  <div class="year-pill">
+                    <span class="year-number" id="calendarYearNumber">2026</span>
+                    <span class="year-badge" id="calendarYearBadge">Año actual</span>
+                  </div>
+                  <button class="year-nav-btn" id="nextYearBtn" aria-label="Año siguiente" title="Año siguiente">
+                    <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                  </button>
+                </div>
+                <div class="year-meta-group">
+                  <button class="year-today-btn" id="todayYearBtn" type="button"><svg><use href="#i-sparkle"/></svg><span>Año actual</span></button>
+                  <span class="bday-count-badge" id="bdayCountBadge"><svg><use href="#i-cake"/></svg> <b id="bdayTotalCount">0</b> fechas</span>
+                </div>
+              </div>
+
+              <!-- Detalle emergente de cumpleaños seleccionado -->
+              <div id="bdayDetailPanel" class="bday-detail-panel" hidden>
+                <div class="bday-detail-card" id="bdayDetailCard"></div>
+              </div>
+
+              <!-- Cuadrícula anual de 12 meses -->
+              <div class="bday-calendar-grid" id="birthdaysCalendarGrid"></div>
+
+              <!-- Lista resumen de cumpleaños -->
+              <div class="bday-summary-section">
+                <div class="bday-summary-head">
+                  <div>
+                    <span class="bday-summary-eyebrow">AGENDA ANUAL</span>
+                    <h3>Cumpleaños en <span id="summaryYearLabel">2026</span></h3>
+                  </div>
+                  <span class="bday-summary-tag" id="summaryCountLabel">0 personas</span>
+                </div>
+                <div class="bday-summary-list" id="bdaySummaryList"></div>
+                <div id="bdayEmptyState" class="empty-state" hidden>
+                  <div class="empty-illustration"><span class="empty-orbit"></span><span class="empty-spark">✦</span><svg><use href="#i-cake"/></svg></div>
+                  <h3>Aún no hay cumpleaños guardados</h3>
+                  <p>Añade los cumpleaños de tus amigos y familiares para verlos organizados mes a mes.</p>
+                  <button id="emptyAddBirthdayBtn" class="empty-add">Guardar mi primer cumpleaños <svg><use href="#i-arrow"/></svg></button>
+                </div>
+              </div>
+
+              <div class="list-bottom-note"><svg><use href="#i-cake"/></svg><span>Fechas y fotos guardadas localmente</span><span class="note-divider"></span><span>hecho con calma <b>♡</b></span></div>
+            </div>
           </section>
 
           <aside class="right-rail" aria-label="Agenda y recordatorios">

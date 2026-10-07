@@ -620,3 +620,575 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* ========================================================
+   CALENDARIO ANUAL DE CUMPLEAÑOS (12 MESES CON GLOBOS)
+   ======================================================== */
+.birthdays-content { animation: rise-in .45s cubic-bezier(.2,.7,.3,1) both; }
+.birthdays-content[hidden] { display: none !important; }
+
+/* Barra de control del año */
+.calendar-year-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 22px;
+  padding: 12px 18px;
+  border: 1px solid #e7ebe3;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgba(50,63,53,.025);
+}
+.year-control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.year-pill {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0 6px;
+}
+.year-number {
+  font-size: 27px;
+  font-weight: 800;
+  color: #313f36;
+  letter-spacing: -0.8px;
+  line-height: 1;
+}
+.year-badge {
+  font-size: 11px;
+  font-weight: 650;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #edf4ec;
+  color: #4a6f50;
+}
+.year-nav-btn {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e1e7dc;
+  border-radius: 10px;
+  background: #fbfcf9;
+  color: #55665a;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.year-nav-btn:hover {
+  background: #edf3ec;
+  color: #364e3c;
+  border-color: #cbd8ca;
+  transform: translateY(-1px);
+}
+.year-nav-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+}
+.year-meta-group {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.year-today-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border: 1px solid #e1e7dc;
+  border-radius: 9px;
+  background: #fff;
+  color: #556759;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.year-today-btn:hover {
+  background: #f4f8f3;
+  color: #3a5740;
+  border-color: #cbded0;
+}
+.year-today-btn svg { width: 13px; height: 13px; color: #a48bb4; }
+.bday-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #8c6e98;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f8f1f8;
+  padding: 7px 12px;
+  border-radius: 9px;
+}
+.bday-count-badge svg { width: 14px; height: 14px; }
+
+/* Panel de detalle de cumpleaños seleccionado */
+.bday-detail-panel {
+  margin-bottom: 22px;
+  animation: task-enter .32s ease both;
+}
+.bday-detail-panel[hidden] { display: none !important; }
+.bday-detail-card {
+  background: linear-gradient(135deg, #fff 0%, #faf8f5 100%);
+  border: 1.5px solid #e5ded6;
+  border-radius: 18px;
+  padding: 18px 22px;
+  box-shadow: 0 8px 24px rgba(66,54,46,.08);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.bday-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f0e9e4;
+  padding-bottom: 10px;
+}
+.bday-detail-date-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 750;
+  color: #4a3e49;
+}
+.bday-detail-date-title svg { width: 18px; height: 18px; color: #9c7aa1; }
+.bday-detail-close-btn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #e4ddd6;
+  border-radius: 8px;
+  background: #fff;
+  color: #7b717a;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.bday-detail-close-btn:hover { background: #faede9; color: #b65245; }
+.bday-detail-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bday-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.9);
+  border: 1px solid #ede8e3;
+}
+.bday-detail-avatar {
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--item-bg, #9b7ba9);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 750;
+  box-shadow: 0 3px 10px rgba(0,0,0,.12);
+}
+.bday-detail-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.bday-detail-info { flex: 1; min-width: 0; }
+.bday-detail-info h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #3b323b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bday-detail-meta {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #7d727c;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.bday-detail-weekday-tag {
+  font-weight: 700;
+  color: #4b6a52;
+  background: #edf5ee;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+.bday-detail-age-tag {
+  font-weight: 700;
+  color: #8f6a98;
+  background: #f7eff8;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+.bday-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* La cuadrícula anual de 12 meses */
+.bday-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.bday-month-card {
+  background: #fff;
+  border: 1px solid #e7ebe4;
+  border-radius: 16px;
+  padding: 13px 10px 14px;
+  box-shadow: 0 3px 10px rgba(50,61,54,.025);
+  display: flex;
+  flex-direction: column;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.bday-month-card:hover {
+  border-color: #d6ded4;
+  box-shadow: 0 6px 18px rgba(50,61,54,.05);
+}
+.bday-month-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 9px;
+  padding: 0 4px;
+}
+.bday-month-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 750;
+  color: #36423a;
+  letter-spacing: -0.3px;
+}
+.bday-month-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #8c6a96;
+  background: #f8eff8;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.bday-weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  color: #859089;
+  font-size: 10.5px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #f0f2ed;
+}
+.bday-weekdays-row span:nth-child(6),
+.bday-weekdays-row span:nth-child(7) {
+  color: #a49490;
+}
+.bday-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 5px;
+  column-gap: 2px;
+  align-items: center;
+  justify-items: center;
+}
+.bday-day-cell {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 34px;
+  max-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #4b5850;
+  font-weight: 550;
+  border-radius: 50%;
+  user-select: none;
+  transition: all .16s ease;
+}
+.bday-day-cell.is-empty {
+  pointer-events: none;
+  visibility: hidden;
+}
+.bday-day-cell.is-today-circle {
+  font-weight: 750;
+  color: #304e37;
+  box-shadow: inset 0 0 0 1.5px #6d9876;
+  background: #edf5ed;
+}
+.bday-day-cell.has-birthday {
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* El globo de cumpleaños (Balloon Pin) */
+.bday-balloon-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 28px;
+  cursor: pointer;
+  transition: transform .2s cubic-bezier(.2,.8,.2,1);
+}
+.bday-balloon-wrap:hover {
+  transform: scale(1.3) translateY(-3px);
+  z-index: 10;
+}
+.bday-balloon-wrap.is-active-day {
+  transform: scale(1.32) translateY(-4px);
+  z-index: 12;
+}
+.bday-balloon-wrap.is-active-day .bday-balloon-bubble {
+  box-shadow: 0 0 0 2.5px #fff, 0 4px 12px rgba(0,0,0,.28);
+}
+.bday-balloon-bubble {
+  width: 22px;
+  height: 22px;
+  border-radius: 50% 50% 50% 50% / 55% 55% 45% 45%;
+  background: var(--balloon-bg, #8a79b7);
+  color: var(--balloon-color, #fff);
+  display: grid;
+  place-items: center;
+  font-size: 10.5px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 2px 7px rgba(0,0,0,.18);
+  overflow: hidden;
+}
+.bday-balloon-bubble img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bday-balloon-tail {
+  width: 0;
+  height: 0;
+  border-left: 2.5px solid transparent;
+  border-right: 2.5px solid transparent;
+  border-bottom: 3.5px solid var(--balloon-bg, #8a79b7);
+  transform: rotate(180deg);
+  margin-top: -1px;
+}
+.bday-balloon-cluster-badge {
+  position: absolute;
+  top: -3px;
+  right: -4px;
+  background: #db4949;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 850;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+
+/* Sección resumen anual de cumpleaños */
+.bday-summary-section {
+  background: #fff;
+  border: 1px solid #e7ebe3;
+  border-radius: 17px;
+  padding: 20px 22px;
+  box-shadow: 0 3px 12px rgba(50,63,53,.025);
+  margin-bottom: 20px;
+}
+.bday-summary-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f2ed;
+}
+.bday-summary-eyebrow {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 750;
+  color: #8e9a91;
+  letter-spacing: 1.2px;
+  margin-bottom: 4px;
+}
+.bday-summary-head h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #38453d;
+}
+.bday-summary-tag {
+  font-size: 11.5px;
+  font-weight: 650;
+  color: #7c5d86;
+  background: #f7eef7;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+.bday-summary-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.bday-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 13px;
+  border: 1px solid #ebf0e9;
+  background: #fdfdfc;
+  transition: all .2s ease;
+  cursor: pointer;
+}
+.bday-summary-item:hover {
+  transform: translateY(-2px);
+  border-color: #d9e4d7;
+  box-shadow: 0 6px 16px rgba(50,63,53,.06);
+  background: #fff;
+}
+.bday-summary-avatar {
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--summary-bg, #9374a2);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 750;
+  box-shadow: 0 2px 7px rgba(0,0,0,.1);
+}
+.bday-summary-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.bday-summary-text { flex: 1; min-width: 0; }
+.bday-summary-text strong {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 670;
+  color: #3d4a41;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bday-summary-text span {
+  display: block;
+  font-size: 11.5px;
+  color: #7c8880;
+  margin-top: 3px;
+}
+.bday-summary-weekday {
+  font-weight: 700;
+  color: #4a6a51;
+}
+
+/* Ajustes responsivos para mantener la cuadrícula de 3 meses como en la foto */
+@media (max-width: 760px) {
+  .bday-calendar-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .bday-month-card {
+    padding: 10px 5px 11px;
+    border-radius: 12px;
+  }
+  .bday-month-title {
+    font-size: 13px;
+  }
+  .bday-month-badge {
+    display: none;
+  }
+  .bday-weekdays-row {
+    font-size: 9px;
+    gap: 0;
+  }
+  .bday-day-cell {
+    font-size: 10.5px;
+    max-width: 26px;
+    max-height: 26px;
+  }
+  .bday-balloon-wrap {
+    width: 20px;
+    height: 23px;
+  }
+  .bday-balloon-bubble {
+    width: 18px;
+    height: 18px;
+    font-size: 9px;
+  }
+  .bday-balloon-tail {
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 3px;
+  }
+  .bday-summary-list {
+    grid-template-columns: 1fr;
+  }
+  .calendar-year-bar {
+    padding: 10px 14px;
+  }
+  .year-number {
+    font-size: 22px;
+  }
+}
+@media (max-width: 440px) {
+  .bday-calendar-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+  .bday-month-card {
+    padding: 8px 3px 9px;
+  }
+  .bday-month-title {
+    font-size: 11.5px;
+  }
+  .bday-weekdays-row {
+    font-size: 8px;
+    margin-bottom: 4px;
+    padding-bottom: 3px;
+  }
+  .bday-day-cell {
+    font-size: 9.5px;
+  }
+  .bday-balloon-wrap {
+    width: 18px;
+    height: 20px;
+  }
+  .bday-balloon-bubble {
+    width: 16px;
+    height: 16px;
+    font-size: 8.5px;
+  }
+  .year-badge {
+    display: none;
+  }
+  .year-today-btn span {
+    display: none;
+  }
+}
+

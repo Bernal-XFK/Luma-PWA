@@ -1,4 +1,4 @@
-const CACHE_NAME = 'luma-shell-v7';
+const CACHE_NAME = 'luma-shell-v8';
 const APP_FILES = [
   './',
   './index.html',
